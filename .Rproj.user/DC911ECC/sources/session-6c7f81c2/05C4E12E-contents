@@ -1,0 +1,58 @@
+library(sf)
+library(dplyr)
+library(leaflet)
+library(htmlwidgets)
+library(RColorBrewer)
+
+# 1. Baca data (jika belum ada di environment)
+jakarta_leaflet <- st_read("output/jakarta_spbu_hotspot_analysis.shp")
+spbu_leaflet <- st_read("output/spbu_points_jakarta.shp")
+
+# 2. Transformasi CRS ke WGS84 (long-lat)
+jakarta_leaflet <- st_transform(jakarta_leaflet, crs = 4326)
+spbu_leaflet <- st_transform(spbu_leaflet, crs = 4326)
+
+
+# 4. Buat palet warna untuk kategori hotspot
+pal <- colorFactor(
+  palette = c("Not Significant" = "gray",
+              "Low-Low" = "blue",
+              "High-High" = "red"),
+  domain = jakarta_leaflet$hotspot_category
+)
+
+# 5. Buat peta interaktif
+peta_interaktif <- leaflet(jakarta_leaflet) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(
+    fillColor = ~pal(hotspot_category),
+    fillOpacity = 0.7,
+    color = "white",
+    weight = 0.5,
+    popup = ~paste0("Grid ID: ", grid_id,
+                    "<br>Jumlah SPBU: ", spbu_count,
+                    "<br>Kategori: ", hotspot_category)
+  ) %>%
+  addCircleMarkers(
+    data = spbu_leaflet,
+    radius = 3,
+    color = "black",
+    stroke = FALSE,
+    fillOpacity = 0.8,
+    popup = ~paste0("SPBU: ", ifelse(is.na(name), "Tanpa Nama", name))
+  )
+
+# 6. Simpan ke file HTML
+saveWidget(
+  widget = peta_interaktif,
+  file = "output/interactive_hotspot_map.html",
+  selfcontained = TRUE  # Jika error, ganti ke FALSE
+)
+
+peta_interaktif <- peta_interaktif %>%
+  addLegend(
+    pal = pal,
+    values = ~hotspot_category,
+    title = "Kategori Hotspot",
+    position = "bottomright"
+  )

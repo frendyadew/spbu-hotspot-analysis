@@ -1,0 +1,5 @@
+"hotspot_category","jumlah_grid","rata2_spbu","median_spbu","min_zscore","max_zscore"
+"Hot Spot (90% confidence)",21,3.1,0,1.688,1.951
+"Hot Spot (95% confidence)",28,5.04,3,2.03,2.568
+"Hot Spot (99% confidence)",41,3.29,0,2.629,5.538
+"Not Significant",637,1.92,0,-1.477,1.644

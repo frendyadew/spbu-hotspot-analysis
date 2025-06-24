@@ -1,0 +1,45 @@
+library(ggplot2)
+
+# Warna untuk kategori hotspot
+hotspot_colors <- c(
+  "Hot Spot (99% confidence)" = "#d73027",
+  "Hot Spot (95% confidence)" = "#f46d43",
+  "Hot Spot (90% confidence)" = "#fdae61",
+  "Not Significant" = "#ffffbf",
+  "Cold Spot (90% confidence)" = "#abd9e9",
+  "Cold Spot (95% confidence)" = "#74add1",
+  "Cold Spot (99% confidence)" = "#4575b4"
+)
+
+# Buat peta utama hotspot
+hotspot_map <- ggplot() +
+  geom_sf(data = jakarta_analysis, 
+          aes(fill = hotspot_category), 
+          color = "white", 
+          size = 0.1) +
+  geom_sf(data = spbu_m, 
+          color = "black", 
+          size = 0.5, 
+          alpha = 0.7) +
+  scale_fill_manual(values = hotspot_colors,
+                    name = "Kategori Hotspot") +
+  labs(
+    title = "Analisis Hotspot SPBU di DKI Jakarta",
+    subtitle = "Menggunakan Statistik Getis-Ord Gi*",
+    caption = "Sumber: OpenStreetMap, Analisis oleh Getis-Ord Gi*"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 12),
+    legend.position = "bottom",
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 8)
+  )
+
+# Tampilkan peta
+print(hotspot_map)
+
+# Simpan peta sebagai file PNG
+ggsave("hotspot_spbu_jakarta.png", hotspot_map, 
+       width = 12, height = 8, dpi = 300)
